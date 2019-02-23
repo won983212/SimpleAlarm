@@ -23,19 +23,20 @@ namespace SimpleAlarm
 	public partial class MainWindow : Window
 	{
 		private System.Windows.Forms.NotifyIcon notifyIcon;
+		private ExpandAnimation alarmMenuAnimation;
 
 		public MainWindow()
 		{
 			InitializeComponent();
-
-			notifyIcon = new System.Windows.Forms.NotifyIcon();
+			// TODO Test disable
+			/*notifyIcon = new System.Windows.Forms.NotifyIcon();
 			using (Stream s = Application.GetResourceStream(new Uri("alarm.ico", UriKind.Relative)).Stream)
 				notifyIcon.Icon = new System.Drawing.Icon(s);
 			notifyIcon.Text = "알람";
 			notifyIcon.MouseDown += NotifyIcon_MouseDown;
 			notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
 			notifyIcon.BalloonTipClicked += NotifyIcon_DoubleClick;
-			notifyIcon.Visible = true;
+			notifyIcon.Visible = true;*/
 		}
 
 		private string GetDayOfWeek(DayOfWeek now)
@@ -100,6 +101,16 @@ namespace SimpleAlarm
 		private void Tray_MouseDown(object sender, MouseButtonEventArgs e)
 		{
 			Hide();
+		}
+
+		private void MenuToggle_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			alarmMenuAnimation.Open();
+		}
+
+		private void Window_Loaded(object sender, RoutedEventArgs e)
+		{
+			alarmMenuAnimation = new ExpandAnimation(pnlAlarmMenu);
 		}
 	}
 }
