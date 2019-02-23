@@ -44,6 +44,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -67,10 +68,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Alarm.cs" />
+    <Compile Include="AlarmManager.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controls\Clock.cs" />
+    <Compile Include="Controls\TimeCounter.cs" />
     <Compile Include="ExpandAnimation.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -115,9 +120,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\minimize.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\3.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\menu.png" />

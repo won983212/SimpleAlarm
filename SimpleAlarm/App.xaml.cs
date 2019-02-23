@@ -13,5 +13,11 @@ namespace SimpleAlarm
 	/// </summary>
 	public partial class App : Application
 	{
+		public static readonly PermanenceConfig Settings = new PermanenceConfig();
+
+		public App()
+		{
+			Settings.Load();
+		}
 	}
 }

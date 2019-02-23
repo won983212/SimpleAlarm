@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -24,42 +25,58 @@ namespace SimpleAlarm
 	{
 		private System.Windows.Forms.NotifyIcon notifyIcon;
 		private ExpandAnimation alarmMenuAnimation;
+		private AlarmManager alarms = new AlarmManager();
 
+		// TODO 다이나믹한 배경 만들기
+		// TODO 숫자 움직일 때 위아래로 changing
 		public MainWindow()
 		{
 			InitializeComponent();
-			// TODO Test disable
-			/*notifyIcon = new System.Windows.Forms.NotifyIcon();
+			
+			notifyIcon = new System.Windows.Forms.NotifyIcon();
 			using (Stream s = Application.GetResourceStream(new Uri("alarm.ico", UriKind.Relative)).Stream)
 				notifyIcon.Icon = new System.Drawing.Icon(s);
 			notifyIcon.Text = "알람";
 			notifyIcon.MouseDown += NotifyIcon_MouseDown;
 			notifyIcon.DoubleClick += NotifyIcon_DoubleClick;
 			notifyIcon.BalloonTipClicked += NotifyIcon_DoubleClick;
-			notifyIcon.Visible = true;*/
+			notifyIcon.Visible = true;
+
+			// timer for calculating current time.
+			DispatcherTimer timer = new DispatcherTimer();
+			timer.Tick += Timer_Tick;
+			timer.Interval = TimeSpan.FromMilliseconds(500);
+			timer.Start();
+
+			// Initial setting to show current time at first.
+			Timer_Tick(null, null);
+
+			itemsAlarm.ItemsSource = alarms.Collection;
 		}
 
-		private string GetDayOfWeek(DayOfWeek now)
+		private void Timer_Tick(object sender, EventArgs e)
 		{
-			switch (now)
-			{
-				case DayOfWeek.Monday:
-					return "MONDAY";
-				case DayOfWeek.Tuesday:
-					return "TUESDAY";
-				case DayOfWeek.Wednesday:
-					return "WEDNESDAY";
-				case DayOfWeek.Thursday:
-					return "THURSDAY";
-				case DayOfWeek.Friday:
-					return "FRIDAY";
-				case DayOfWeek.Saturday:
-					return "SATURDAY";
-				case DayOfWeek.Sunday:
-					return "SUNDAY";
-			}
+			DateTime now = DateTime.Now;
 
-			return "";
+			clock.Time = now;
+			tblCurrentTime.Text = now.ToString("hh:mm");
+			tblCurrentAmPm.Text = now.Hour > 12 ? "PM" : "AM";
+			tblCurrentDate.Text = now.ToString("yyyy.MM.dd " + Alarm.GetDayOfWeek(now.DayOfWeek));
+
+			Alarm next = alarms.NextAlarm();
+			Alarm prev = alarms.PreviousAlarm();
+			if (next != null && prev != null)
+			{
+				// TODO Alarm text
+				//tblCurrentAlarm.Text = alarms.NextAlarm().GetTimeRemaining().ToString("hh':'mm':'ss");
+				tblAlarmLabel.Text = alarms.PreviousAlarm().Label;
+				alarms.UpdateAlarms();
+			}
+			else
+			{
+				//tblCurrentAlarm.Text = "Alarm off";
+				tblAlarmLabel.Text = "";
+			}
 		}
 
 		private void NotifyIcon_DoubleClick(object sender, EventArgs e)
@@ -88,16 +105,14 @@ namespace SimpleAlarm
 				notifyIcon.Dispose();
 			Application.Current.Shutdown();
 		}
-
-		// Close
+		
 		private void Close_MouseDown(object sender, MouseButtonEventArgs e)
 		{
 			if (notifyIcon != null)
 				notifyIcon.Dispose();
 			Application.Current.Shutdown();
 		}
-
-		// Tray
+		
 		private void Tray_MouseDown(object sender, MouseButtonEventArgs e)
 		{
 			Hide();
@@ -105,12 +120,20 @@ namespace SimpleAlarm
 
 		private void MenuToggle_MouseDown(object sender, MouseButtonEventArgs e)
 		{
-			alarmMenuAnimation.Open();
+			bool opened = App.Settings.Get("MenuOpened", true);
+			if (opened)
+				alarmMenuAnimation.Close();
+			else
+				alarmMenuAnimation.Open();
+			App.Settings.Set("MenuOpened", !opened);
+			App.Settings.Save();
 		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			alarmMenuAnimation = new ExpandAnimation(pnlAlarmMenu);
+			if (App.Settings.Get("MenuOpened", true))
+				alarmMenuAnimation.Open();
 		}
 	}
 }

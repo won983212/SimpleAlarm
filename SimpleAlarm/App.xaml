@@ -5,11 +5,10 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <SolidColorBrush x:Key="BlackBrush" Color="#FF333333"/>
+        <SolidColorBrush x:Key="LightBlackBrush" Color="#FF3E3E3E"/>
         <SolidColorBrush x:Key="WhiteBrush" Color="#FFFDFDFD"/>
         <SolidColorBrush x:Key="GrayBrush" Color="Gray"/>
-        <SolidColorBrush x:Key="LightGrayBrush" Color="LightGray"/>
         <SolidColorBrush x:Key="BlueBrush" Color="#FF00BCD5"/>
-        <SolidColorBrush x:Key="DarkBlueBrush" Color="#FF008DA0"/>
 
         <DropShadowEffect x:Key="ShallowShadow" BlurRadius="0" RenderingBias="Quality" ShadowDepth="1" Color="#FF0096A5" />
 
