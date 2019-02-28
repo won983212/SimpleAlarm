@@ -62,11 +62,11 @@ namespace SimpleAlarm
 		{
 			DateTime now = DateTime.Now;
 			int diff = TotalSeconds(TargetTime) - TotalSeconds(now);
-
+			
 			if (diff < 0)
 				return TimeSpan.FromHours(24) - new TimeSpan(0, 0, -diff);
 			else
-				return new TimeSpan(diff);
+				return new TimeSpan(0, 0, diff);
 		}
 
 		public void UpdateRemainingString()

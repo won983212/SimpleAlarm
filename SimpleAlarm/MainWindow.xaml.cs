@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -28,11 +29,10 @@ namespace SimpleAlarm
 		private AlarmManager alarms = new AlarmManager();
 
 		// TODO 다이나믹한 배경 만들기
-		// TODO 숫자 움직일 때 위아래로 changing
 		public MainWindow()
 		{
 			InitializeComponent();
-			
+
 			notifyIcon = new System.Windows.Forms.NotifyIcon();
 			using (Stream s = Application.GetResourceStream(new Uri("alarm.ico", UriKind.Relative)).Stream)
 				notifyIcon.Icon = new System.Drawing.Icon(s);
@@ -45,13 +45,17 @@ namespace SimpleAlarm
 			// timer for calculating current time.
 			DispatcherTimer timer = new DispatcherTimer();
 			timer.Tick += Timer_Tick;
-			timer.Interval = TimeSpan.FromMilliseconds(500);
+			timer.Interval = TimeSpan.FromMilliseconds(300);
 			timer.Start();
 
 			// Initial setting to show current time at first.
 			Timer_Tick(null, null);
 
 			itemsAlarm.ItemsSource = alarms.Collection;
+			SystemEvents.TimeChanged += delegate
+			{
+				Console.WriteLine("TimeChanged");
+			};
 		}
 
 		private void Timer_Tick(object sender, EventArgs e)
@@ -59,23 +63,23 @@ namespace SimpleAlarm
 			DateTime now = DateTime.Now;
 
 			clock.Time = now;
-			tblCurrentTime.Text = now.ToString("hh:mm");
+			counterCurrentTime.Time = now;
 			tblCurrentAmPm.Text = now.Hour > 12 ? "PM" : "AM";
-			tblCurrentDate.Text = now.ToString("yyyy.MM.dd " + Alarm.GetDayOfWeek(now.DayOfWeek));
+			tblCurrentDate.Text = now.ToString("yyyy.MM.dd ") + Alarm.GetDayOfWeek(now.DayOfWeek);
 
 			Alarm next = alarms.NextAlarm();
 			Alarm prev = alarms.PreviousAlarm();
 			if (next != null && prev != null)
 			{
-				// TODO Alarm text
-				//tblCurrentAlarm.Text = alarms.NextAlarm().GetTimeRemaining().ToString("hh':'mm':'ss");
-				tblAlarmLabel.Text = alarms.PreviousAlarm().Label;
+				counterCurrentAlarm.Visibility = Visibility.Visible;
+				counterCurrentAlarm.Time = new DateTime() + next.GetTimeRemaining();
+				tblAlarmLabel.Text = prev.Label;
 				alarms.UpdateAlarms();
 			}
 			else
 			{
-				//tblCurrentAlarm.Text = "Alarm off";
-				tblAlarmLabel.Text = "";
+				counterCurrentAlarm.Visibility = Visibility.Collapsed;
+				tblAlarmLabel.Text = "알람 없음";
 			}
 		}
 
@@ -87,7 +91,7 @@ namespace SimpleAlarm
 
 		private void NotifyIcon_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
-			if(e.Button == System.Windows.Forms.MouseButtons.Right)
+			if (e.Button == System.Windows.Forms.MouseButtons.Right)
 			{
 				ContextMenu menu = (ContextMenu)FindResource("notifyIconContextMenu");
 				menu.IsOpen = true;
@@ -98,27 +102,27 @@ namespace SimpleAlarm
 		{
 			DragMove();
 		}
-		
+
 		private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
 		{
 			if (notifyIcon != null)
 				notifyIcon.Dispose();
 			Application.Current.Shutdown();
 		}
-		
-		private void Close_MouseDown(object sender, MouseButtonEventArgs e)
+
+		private void Tray_Click(object sender, RoutedEventArgs e)
+		{
+			Hide();
+		}
+
+		private void Close_Click(object sender, RoutedEventArgs e)
 		{
 			if (notifyIcon != null)
 				notifyIcon.Dispose();
 			Application.Current.Shutdown();
 		}
-		
-		private void Tray_MouseDown(object sender, MouseButtonEventArgs e)
-		{
-			Hide();
-		}
 
-		private void MenuToggle_MouseDown(object sender, MouseButtonEventArgs e)
+		private void MenuToggle_Click(object sender, RoutedEventArgs e)
 		{
 			bool opened = App.Settings.Get("MenuOpened", true);
 			if (opened)
@@ -134,6 +138,21 @@ namespace SimpleAlarm
 			alarmMenuAnimation = new ExpandAnimation(pnlAlarmMenu);
 			if (App.Settings.Get("MenuOpened", true))
 				alarmMenuAnimation.Open();
+		}
+
+		private void AddAlarm_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void AddAlarmPattern_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void RemoveAlarm_Click(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 }

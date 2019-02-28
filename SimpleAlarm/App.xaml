@@ -10,7 +10,26 @@
         <SolidColorBrush x:Key="GrayBrush" Color="Gray"/>
         <SolidColorBrush x:Key="BlueBrush" Color="#FF00BCD5"/>
 
-        <DropShadowEffect x:Key="ShallowShadow" BlurRadius="0" RenderingBias="Quality" ShadowDepth="1" Color="#FF0096A5" />
+        <Style x:Key="TransparentButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Background" Value="#22FFFFFF"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="true">
+                    <Setter Property="Background" Value="#11FFFFFF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
         <Style x:Key="SliderCheckbox" TargetType="CheckBox">
             <Setter Property="SnapsToDevicePixels" Value="True"/>
