@@ -1,0 +1,40 @@
+﻿<Window x:Name="wndRoot"
+        x:Class="SimpleAlarm.AlarmCall"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SimpleAlarm"
+        mc:Ignorable="d"
+        Topmost="True"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Cursor="Hand"
+        AllowsTransparency="True"
+        Background="#88000000"
+        Loaded="Window_Loaded"
+        MouseDown="wndRoot_MouseDown"
+        Title="AlarmCall" Width="400" SizeToContent="Height">
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation From="0" To="400" Duration="0:0:0.3"
+                                     Storyboard.TargetName="wndRoot"
+                                     Storyboard.TargetProperty="Width">
+                        <DoubleAnimation.EasingFunction>
+                            <QuadraticEase EasingMode="EaseOut"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+    <StackPanel Orientation="Horizontal" Margin="12">
+        <Image Margin="10" Width="20" Source="/alarm.ico" RenderOptions.BitmapScalingMode="HighQuality"/>
+        <StackPanel Margin="10">
+            <TextBlock x:Name="tblTitle" Margin="0,0,0,5" Foreground="White" FontSize="18" FontWeight="Bold" FontFamily="NanumSquare" Text="테스트 알람"/>
+            <TextBlock x:Name="tblDescription" Foreground="Gray" FontSize="18" FontFamily="NanumSquare" Text="23:14:52 입니다."/>
+        </StackPanel>
+    </StackPanel>
+</Window>

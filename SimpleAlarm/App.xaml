@@ -10,6 +10,46 @@
         <SolidColorBrush x:Key="GrayBrush" Color="Gray"/>
         <SolidColorBrush x:Key="BlueBrush" Color="#FF00BCD5"/>
 
+        <LinearGradientBrush x:Key="EveningBrush" EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+            <GradientStop Color="#FF263747"/>
+            <GradientStop Color="#FFC5986F" Offset="1"/>
+        </LinearGradientBrush>
+        
+        <LinearGradientBrush x:Key="MorningBrush" EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+            <GradientStop Color="#FF527CB6"/>
+            <GradientStop Color="#FF96BCE0" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="NightBrush" EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+            <GradientStop Color="#FF0F1547"/>
+            <GradientStop Color="#FF2C3959" Offset="1"/>
+        </LinearGradientBrush>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#FF2A579A"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF3368B6"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FF214478"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="false">
+                    <Setter Property="Background" Value="#FFA8A8A8"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
         <Style x:Key="TransparentButton" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Template">

@@ -11,17 +11,13 @@ namespace SimpleAlarm
     {
 		// Collection은 반드시 시각순으로 sort되어있어야 한다.
 		public ObservableCollection<Alarm> Collection { get; }
+		public AlarmPatternDictionary Settings;
 		private SortedList<int, Alarm> enabledAlarms = new SortedList<int, Alarm>();
 
-		public AlarmManager()
+		public AlarmManager(AlarmPatternDictionary setting)
 		{
 			Collection = new ObservableCollection<Alarm>();
-
-			// TODO Test
-			InsertAlarm(new Alarm() { Manager = this, TargetTime = new DateTime(1, 1, 1, 9, 20, 00), IsEnabled = true, Label = "Hello, world?" });
-			InsertAlarm(new Alarm() { Manager = this, TargetTime = new DateTime(1, 1, 1, 14, 40, 00), IsEnabled = true, Label = "앙 테스트 알람~" });
-			InsertAlarm(new Alarm() { Manager = this, TargetTime = new DateTime(1, 1, 1, 19, 00, 00), IsEnabled = false, Label = "이건 끄자 ㅎㅎ" });
-			InsertAlarm(new Alarm() { Manager = this, TargetTime = new DateTime(1, 1, 1, 15, 00, 00), IsEnabled = false, Label = "이건 끄자 ㅇㅋ??" });
+			Settings = setting;
 		}
 
 		public void OnChangeEnabled(Alarm alarm)
@@ -30,6 +26,7 @@ namespace SimpleAlarm
 				enabledAlarms.Add(alarm.GetTotalSeconds(), alarm);
 			else
 				enabledAlarms.Remove(alarm.GetTotalSeconds());
+			Settings.SaveToSettings();
 		}
 
 		public void InsertAlarm(Alarm alarm)
@@ -44,6 +41,13 @@ namespace SimpleAlarm
 			Collection.Insert(idx, alarm);
 			if(alarm.IsEnabled)
 				enabledAlarms.Add(alarm.GetTotalSeconds(), alarm);
+		}
+
+		public void RemoveAlarm(Alarm alarm)
+		{
+			Collection.Remove(alarm);
+			if (alarm.IsEnabled)
+				enabledAlarms.Remove(alarm.GetTotalSeconds());
 		}
 
 		public void UpdateAlarms()

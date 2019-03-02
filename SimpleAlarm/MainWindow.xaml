@@ -13,7 +13,7 @@
         Loaded="Window_Loaded"
         SnapsToDevicePixels="True"
         UseLayoutRounding="True"
-        Title="MainWindow" Width="500" SizeToContent="Height">
+        Title="MainWindow" Width="530" SizeToContent="Height">
     <Window.Resources>
         <ContextMenu x:Key="notifyIconContextMenu" Placement="MousePoint">
             <MenuItem Header="종료" Click="MenuItem_Close_Click"/>
@@ -21,119 +21,169 @@
     </Window.Resources>
     <Border BorderBrush="{StaticResource BlackBrush}" BorderThickness="1">
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Rectangle Grid.RowSpan="2" Fill="{StaticResource LightBlackBrush}"/>
-            <Grid>
-                <TextBlock x:Name="tblAlarmLabel" Margin="8,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" 
-                           FontSize="15" Foreground="{StaticResource WhiteBrush}" Text="쉬는 시간 1" FontFamily="NanumSquare"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Style="{StaticResource TransparentButton}" ToolTip="트레이 아이콘으로 프로그램을 숨깁니다." Click="Tray_Click">
-                        <Button.Content>
-                            <Image Margin="8" Width="16" Source="/Resources/minimize.png"/>
-                        </Button.Content>
-                    </Button>
-                    <Button Style="{StaticResource TransparentButton}" ToolTip="프로그램을 종료합니다." Click="Close_Click">
-                        <Button.Content>
-                            <Image Margin="8" Width="16" Source="/Resources/close.png"/>
-                        </Button.Content>
-                    </Button>
-                </StackPanel>
-            </Grid>
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-                <controls:Clock x:Name="clock" Margin="20" Width="190" Height="190" Foreground="{StaticResource WhiteBrush}" Background="Transparent"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
-                        <controls:TimeCounter x:Name="counterCurrentTime" Margin="0,0,0,10" Foreground="{StaticResource WhiteBrush}" FontSize="88" Time="00:00" FontFamily="NanumSquare Light" />
-                        <TextBlock x:Name="tblCurrentAmPm" Foreground="{StaticResource WhiteBrush}" Margin="0,0,0,20" VerticalAlignment="Bottom" FontSize="24" Text="AM" FontFamily="NanumSquare Light"/>
-                    </StackPanel>
-                    <controls:TimeCounter x:Name="counterCurrentAlarm" Margin="0,0,0,10" Foreground="{StaticResource WhiteBrush}" FontSize="45" Time="00:00:00" InverseAnimation="True" ShowSeconds="True" FontFamily="NanumSquare Light" />
-                </StackPanel>
-            </Grid>
-            <Grid x:Name="pnlAlarmMenu" Grid.Row="3" Height="300">
+            <Grid x:Name="wndGrid">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
-                    <ItemsControl x:Name="itemsAlarm" Grid.Row="3" Margin="8,12">
-                        <ItemsControl.ItemTemplate>
+                <Rectangle Grid.RowSpan="3" Fill="{StaticResource MorningBrush}">
+                    <Rectangle.Effect>
+                        <DropShadowEffect Color="#FFBDBDBD" ShadowDepth="3" Direction="270" />
+                    </Rectangle.Effect>
+                </Rectangle>
+                <Grid x:Name="pnlTopBar">
+                    <TextBlock x:Name="tblAlarmLabel" Margin="8,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                               FontSize="15" Foreground="{StaticResource WhiteBrush}" Text="쉬는 시간 1" FontFamily="NanumSquare"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Style="{StaticResource TransparentButton}" ToolTip="트레이 아이콘으로 프로그램을 숨깁니다." Click="Tray_Click">
+                            <Button.Content>
+                                <Image Margin="8" Width="16" Source="/Resources/minimize.png"/>
+                            </Button.Content>
+                        </Button>
+                        <Button Style="{StaticResource TransparentButton}" ToolTip="프로그램을 종료합니다." Click="Close_Click">
+                            <Button.Content>
+                                <Image Margin="8" Width="16" Source="/Resources/close.png"/>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <controls:Clock x:Name="clock" Margin="20" Width="190" Height="190" Foreground="{StaticResource WhiteBrush}" Background="Transparent"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
+                            <controls:TimeCounter x:Name="counterCurrentTime" Margin="0,0,0,10" Foreground="{StaticResource WhiteBrush}" FontSize="88" FontFamily="NanumSquare Light" />
+                            <TextBlock x:Name="tblCurrentAmPm" Foreground="{StaticResource WhiteBrush}" Margin="7,0,0,20" VerticalAlignment="Bottom" FontSize="24" Text="AM" FontFamily="NanumSquare Light"/>
+                        </StackPanel>
+                        <controls:TimeCounter x:Name="counterCurrentAlarm" Margin="0,0,0,10" Foreground="{StaticResource WhiteBrush}" FontSize="45" InverseAnimation="True" ShowSeconds="True" FontFamily="NanumSquare Light" />
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <Rectangle x:Name="bkgStatusBar" Fill="#66000000" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button Margin="0,0,3,0" Style="{StaticResource TransparentButton}" ToolTip="알람 설정 메뉴를 열거나 닫습니다." Click="MenuToggle_Click">
+                            <Button.Content>
+                                <Image Margin="7" Width="16" Source="/Resources/menu.png"/>
+                            </Button.Content>
+                        </Button>
+                        <TextBlock x:Name="tblCurrentDate" Foreground="{StaticResource WhiteBrush}" VerticalAlignment="Center" FontSize="14" Text="2019.02.22 FRIDAY" FontFamily="Yu Gothic UI"/>
+                    </StackPanel>
+                    <ComboBox x:Name="cbxAlarmPattern" Margin="6" HorizontalAlignment="Right" Width="120" SelectionChanged="AlarmPattern_SelectionChanged" ToolTip="사용할 알람 패턴을 지정합니다.">
+                        <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid Margin="16,8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock FontFamily="Yu Gothic UI" Text="{Binding TimeString}" FontSize="26"/>
-                                    <TextBlock Grid.Column="1" Margin="3,0,0,3" VerticalAlignment="Bottom" FontFamily="Yu Gothic UI" Text="{Binding TimeAmPm}" FontSize="12"/>
-                                    <Rectangle Grid.Column="2" Margin="10,0" Width="1" Fill="{StaticResource GrayBrush}" />
-                                    <StackPanel Grid.Column="3">
-                                        <TextBlock FontSize="15" Text="{Binding Label}" FontFamily="NanumSquare"/>
-                                        <TextBlock Foreground="{StaticResource GrayBrush}" Text="{Binding RemainingTimeString}" FontFamily="Yu Gothic UI Semibold"/>
-                                    </StackPanel>
-                                    <CheckBox Grid.Column="4" Style="{StaticResource SliderCheckbox}" HorizontalAlignment="Right" IsChecked="{Binding IsEnabled}"/>
-                                </Grid>
+                                <TextBlock Text="{Binding Name}"/>
                             </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-                <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom" Background="{StaticResource BlackBrush}">
-                    <StackPanel.Effect>
-                        <DropShadowEffect Color="#FFBDBDBD" ShadowDepth="3" Direction="90" />
-                    </StackPanel.Effect>
-                    <StackPanel.Resources>
-                        <Style TargetType="Image">
-                            <Setter Property="Margin" Value="5"/>
-                            <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
-                        </Style>
-                    </StackPanel.Resources>
-                    <Button Style="{StaticResource TransparentButton}" ToolTip="알람을 추가합니다." Click="AddAlarm_Click">
-                        <Button.Content>
-                            <Image Width="22" Source="/Resources/add_alarm.png"/>
-                        </Button.Content>
-                    </Button>
-                    <Button Style="{StaticResource TransparentButton}" ToolTip="알람 패턴을 추가합니다." Click="AddAlarmPattern_Click">
-                        <Button.Content>
-                            <Image Width="16" Source="/Resources/add.png"/>
-                        </Button.Content>
-                    </Button>
-                    <Button Style="{StaticResource TransparentButton}" ToolTip="현재 선택된 알람 패턴을 삭제합니다." Click="RemoveAlarm_Click">
-                        <Button.Content>
-                            <Image Width="16" Source="/Resources/remove.png"/>
-                        </Button.Content>
-                    </Button>
-                </StackPanel>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+                <Grid x:Name="pnlAlarmMenu" Grid.Row="3" Height="300">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="itemsAlarm" Grid.Row="3" Margin="8,12">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="16,8,5,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock FontFamily="Yu Gothic UI" Text="{Binding TimeString}" FontSize="26"/>
+                                        <TextBlock Grid.Column="1" Margin="3,0,0,3" VerticalAlignment="Bottom" FontFamily="Yu Gothic UI" Text="{Binding TimeAmPm}" FontSize="12"/>
+                                        <Rectangle Grid.Column="2" Margin="10,0" Width="1" Fill="{StaticResource GrayBrush}" />
+                                        <StackPanel Grid.Column="3">
+                                            <TextBlock FontSize="15" Text="{Binding Label}" FontFamily="NanumSquare"/>
+                                            <TextBlock Foreground="{StaticResource GrayBrush}" Text="{Binding RemainingTimeString}" FontFamily="Yu Gothic UI Semibold"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                                            <CheckBox Style="{StaticResource SliderCheckbox}" IsChecked="{Binding IsEnabled}"/>
+                                            <Button Margin="0,0,3,0" Style="{StaticResource TransparentButton}" ToolTip="알람을 삭제합니다" Click="RemoveAlarmEntry_Click" Tag="{Binding}">
+                                                <Button.Content>
+                                                    <Image Margin="10,0,0,0" Width="16" Source="/Resources/remove_button.png"/>
+                                                </Button.Content>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <Grid Grid.Row="1" VerticalAlignment="Bottom" Background="{StaticResource BlackBrush}">
+                        <Grid.Effect>
+                            <DropShadowEffect Color="#FFBDBDBD" ShadowDepth="3" Direction="90" />
+                        </Grid.Effect>
+                        <Grid.Resources>
+                            <Style TargetType="Image">
+                                <Setter Property="Margin" Value="5"/>
+                                <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+                            </Style>
+                        </Grid.Resources>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Style="{StaticResource TransparentButton}" ToolTip="알람을 추가합니다." Click="AddAlarm_Click">
+                                <Button.Content>
+                                    <Image Width="22" Source="/Resources/add_alarm.png"/>
+                                </Button.Content>
+                            </Button>
+                            <Button Style="{StaticResource TransparentButton}" ToolTip="알람 패턴을 추가합니다." Click="AddAlarmPattern_Click">
+                                <Button.Content>
+                                    <Image Width="16" Source="/Resources/add.png"/>
+                                </Button.Content>
+                            </Button>
+                            <Button Style="{StaticResource TransparentButton}" ToolTip="현재 선택된 알람 패턴을 삭제합니다." Click="RemoveAlarm_Click">
+                                <Button.Content>
+                                    <Image Width="16" Source="/Resources/remove.png"/>
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,5,0" HorizontalAlignment="Right">
+                            <TextBlock VerticalAlignment="Center" Text="항상 위로 " Foreground="LightGray" FontFamily="NanumSquare" FontSize="15"/>
+                            <CheckBox x:Name="chxTopmost" Style="{StaticResource SliderCheckbox}" Checked="TopEnabled_Changed" Unchecked="TopEnabled_Changed" ToolTip="창이 항상 위에 있도록 합니다." />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
             </Grid>
-            <Grid Grid.Row="2">
-                <Grid.Effect>
-                    <DropShadowEffect Color="#FFBDBDBD" ShadowDepth="3" Direction="270" />
-                </Grid.Effect>
-                <Rectangle Fill="{StaticResource BlackBrush}" />
-                <StackPanel Orientation="Horizontal">
-                    <Button Margin="0,0,5,0" Style="{StaticResource TransparentButton}" ToolTip="알람 설정 메뉴를 열거나 닫습니다." Click="MenuToggle_Click">
-                        <Button.Content>
-                            <Image Margin="7,7,7,7" Width="16" Source="/Resources/menu.png"/>
-                        </Button.Content>
-                    </Button>
-                    <TextBlock x:Name="tblCurrentDate" Foreground="{StaticResource WhiteBrush}" VerticalAlignment="Center" FontSize="14" Text="2019.02.22 FRIDAY" FontFamily="Yu Gothic UI"/>
+            <Border x:Name="pnlAddPattern" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{StaticResource GrayBrush}" BorderThickness="1" Background="{StaticResource WhiteBrush}" Visibility="Hidden">
+                <StackPanel Margin="10">
+                    <TextBlock Margin="0,0,0,5" FontFamily="NanumSquare" FontSize="18" Text="추가할 알람 패턴의 이름을 입력하세요."/>
+                    <TextBox x:Name="tbxPatternName" Margin="0,7" Height="25" VerticalContentAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Margin="0,0,5,0" Width="50" Height="25" Content="추가" Click="AddPattern_Click"/>
+                        <Button Width="50" Height="25" Content="취소" Click="CancelPattern_Click"/>
+                    </StackPanel>
                 </StackPanel>
-                <ComboBox Margin="6" HorizontalAlignment="Right" Width="120">
-                    <ComboBoxItem>알림 패턴1</ComboBoxItem>
-                    <ComboBoxItem>알림 패턴2</ComboBoxItem>
-                    <ComboBoxItem>알림 패턴3</ComboBoxItem>
-                </ComboBox>
-            </Grid>
+            </Border>
+            <Border x:Name="pnlAddAlarm" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{StaticResource GrayBrush}" BorderThickness="1" Background="{StaticResource WhiteBrush}" Visibility="Hidden">
+                <StackPanel Width="300">
+                    <TextBlock Margin="10,10,10,5" FontFamily="NanumSquare" FontSize="18" Text="알람 이름"/>
+                    <TextBox x:Name="tbxAlarmName" Margin="10,7" Height="25" VerticalContentAlignment="Center"/>
+                    <TextBlock Margin="10,5" FontFamily="NanumSquare" FontSize="18" Text="시각"/>
+                    <StackPanel Orientation="Horizontal" Margin="10,7">
+                        <ComboBox x:Name="cbxAlarmAmPm" Margin="0,0,5,0" Width="70" Height="25" HorizontalContentAlignment="Center" IsEditable="True" SelectedIndex="0">
+                            <System:String>AM</System:String>
+                            <System:String>PM</System:String>
+                        </ComboBox>
+                        <ComboBox x:Name="cbxAlarmHour" Width="70" Height="25" HorizontalContentAlignment="Center" IsEditable="True" SelectedIndex="0"/>
+                        <TextBlock Margin="4,0,8,0" VerticalAlignment="Center" FontFamily="NanumSquare" FontSize="16" Text="시"/>
+                        <ComboBox x:Name="cbxAlarmMinute" Width="70" Height="25" HorizontalContentAlignment="Center" IsEditable="True" SelectedIndex="0"/>
+                        <TextBlock Margin="4,0,8,0" VerticalAlignment="Center" FontFamily="NanumSquare" FontSize="16" Text="분"/>
+                    </StackPanel>
+                    <Separator/>
+                    <StackPanel Orientation="Horizontal" Margin="7" HorizontalAlignment="Right">
+                        <Button Margin="0,0,5,0" Width="50" Height="25" Content="추가" Click="AlarmAdd_Click"/>
+                        <Button Width="50" Height="25" Content="취소" Click="AlarmCancel_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
         </Grid>
     </Border>
 </Window>

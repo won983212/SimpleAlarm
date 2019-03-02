@@ -17,8 +17,8 @@ namespace SimpleAlarm.Controls
 	class TimeCounter : Control
 	{
 		public static DependencyProperty TimeProperty
-			= DependencyProperty.Register("Time", typeof(DateTime), typeof(TimeCounter),
-				new FrameworkPropertyMetadata(DateTime.MinValue, FrameworkPropertyMetadataOptions.AffectsRender, OnTimeChanged));
+			= DependencyProperty.Register("Time", typeof(TimeSpan), typeof(TimeCounter),
+				new FrameworkPropertyMetadata(TimeSpan.FromSeconds(0), FrameworkPropertyMetadataOptions.AffectsRender, OnTimeChanged));
 		public static DependencyProperty ShowSecondsProperty
 			= DependencyProperty.Register("ShowSeconds", typeof(bool), typeof(TimeCounter),
 				new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsMeasure));
@@ -39,9 +39,9 @@ namespace SimpleAlarm.Controls
 			ClipToBounds = true;
 		}
 
-		public DateTime Time
+		public TimeSpan Time
 		{
-			get => (DateTime)GetValue(TimeProperty);
+			get => (TimeSpan)GetValue(TimeProperty);
 			set => SetValue(TimeProperty, value);
 		}
 
@@ -59,7 +59,7 @@ namespace SimpleAlarm.Controls
 
 		public string Label
 		{
-			get => ShowSeconds ? Time.ToString("hh:mm:ss") : Time.ToString("hh:mm");
+			get => ShowSeconds ? Time.ToString("hh':'mm':'ss") : Time.ToString("hh':'mm");
 		}
 
 		private FormattedText CreateFormattedText(string text)
@@ -169,8 +169,8 @@ namespace SimpleAlarm.Controls
 		private static void OnTimeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			TimeCounter counter = d as TimeCounter;
-			string timeNew = ((DateTime) e.NewValue).ToString("hhmmss");
-			string timeOld = ((DateTime) e.OldValue).ToString("hhmmss");
+			string timeNew = ((TimeSpan) e.NewValue).ToString("hhmmss");
+			string timeOld = ((TimeSpan) e.OldValue).ToString("hhmmss");
 			
 			int count = counter.ShowSeconds ? 6 : 4;
 			for (int i = 0; i < count; i++)

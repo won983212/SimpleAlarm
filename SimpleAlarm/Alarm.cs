@@ -49,7 +49,7 @@ namespace SimpleAlarm
 		{
 			get
 			{
-				return IsEnabled ? GetTimeRemaining().ToString("hh':'mm") : "-";
+				return IsEnabled ? GetTimeRemaining().ToString() : "-";
 			}
 		}
 

@@ -64,12 +64,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="AlarmCall.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Alarm.cs" />
+    <Compile Include="AlarmCall.xaml.cs">
+      <DependentUpon>AlarmCall.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AlarmManager.cs" />
+    <Compile Include="AlarmPatternDictionary.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -132,6 +140,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\remove.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\remove_button.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
