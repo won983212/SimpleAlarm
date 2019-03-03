@@ -144,5 +144,8 @@
   <ItemGroup>
     <Resource Include="Resources\remove_button.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\alarm.wav" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

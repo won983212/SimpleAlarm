@@ -11,10 +11,20 @@
         ResizeMode="NoResize"
         Cursor="Hand"
         AllowsTransparency="True"
-        Background="#88000000"
+        Background="#AA000000"
         Loaded="Window_Loaded"
-        MouseDown="wndRoot_MouseDown"
         Title="AlarmCall" Width="400" SizeToContent="Height">
+    <Window.Resources>
+        <Storyboard x:Key="ClosingStoryboard" Completed="CloseAnimation_Completed">
+            <DoubleAnimation From="400" To="0" Duration="0:0:0.3"
+                                     Storyboard.TargetName="wndRoot"
+                                     Storyboard.TargetProperty="Width">
+                <DoubleAnimation.EasingFunction>
+                    <QuadraticEase EasingMode="EaseIn"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </Window.Resources>
     <Window.Triggers>
         <EventTrigger RoutedEvent="Loaded">
             <BeginStoryboard>
@@ -28,6 +38,9 @@
                     </DoubleAnimation>
                 </Storyboard>
             </BeginStoryboard>
+        </EventTrigger>
+        <EventTrigger RoutedEvent="MouseDown">
+            <BeginStoryboard Storyboard="{StaticResource ClosingStoryboard}"/>
         </EventTrigger>
     </Window.Triggers>
     <StackPanel Orientation="Horizontal" Margin="12">

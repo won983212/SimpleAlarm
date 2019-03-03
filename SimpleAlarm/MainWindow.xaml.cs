@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Resources;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
@@ -29,6 +31,7 @@ namespace SimpleAlarm
 		private ExpandAnimation alarmMenuAnimation;
 		private AlarmPatternDictionary patterns;
 		private BlurEffect blur = new BlurEffect();
+		private SoundPlayer alarmSound;
 		
 		public MainWindow()
 		{
@@ -48,6 +51,17 @@ namespace SimpleAlarm
 			timer.Tick += Timer_Tick;
 			timer.Interval = TimeSpan.FromMilliseconds(1000);
 			timer.Start();
+
+			// load alarm sound
+			StreamResourceInfo sri = Application.GetResourceStream(new Uri("/Resources/alarm.wav", UriKind.Relative));
+			if (sri != null)
+			{
+				using (Stream s = sri.Stream)
+				{
+					alarmSound = new SoundPlayer(s);
+					alarmSound.Load();
+				}
+			}
 
 			patterns = new AlarmPatternDictionary();
 			patterns.LoadFromSettings();
@@ -74,6 +88,12 @@ namespace SimpleAlarm
 			}
 		}
 
+		private void PlayAlarm()
+		{
+			if (alarmSound != null)
+				alarmSound.Play();
+		}
+
 		private void Timer_Tick(object sender, EventArgs e)
 		{
 			DateTime now = DateTime.Now;
@@ -82,6 +102,15 @@ namespace SimpleAlarm
 			counterCurrentTime.Time = new TimeSpan(now.Hour % 12, now.Minute, 0);
 			tblCurrentAmPm.Text = now.Hour > 12 ? "PM" : "AM";
 			tblCurrentDate.Text = now.ToString("yyyy.MM.dd ") + Alarm.GetDayOfWeek(now.DayOfWeek);
+
+			string brushKey = "NightBrush";
+			if (now.Hour >= 6 && now.Hour <= 9)
+				brushKey = "MorningBrush";
+			else if (now.Hour > 9 && now.Hour <= 17)
+				brushKey = "AfternoonBrush";
+			else if (now.Hour > 17 && now.Hour <= 20)
+				brushKey = "EveningBrush";
+			pnlBackground.Fill = (Brush)FindResource(brushKey);
 
 			Alarm next = Alarms.NextAlarm();
 			Alarm prev = Alarms.PreviousAlarm();
@@ -95,12 +124,11 @@ namespace SimpleAlarm
 
 				if (remain.TotalSeconds < 1)
 				{
-					AlarmCall wnd = new AlarmCall(next.Label, (next.TargetTime.Hour > 12 ? "PM " : "AM ") + next.TargetTime.ToString("h:mm"));
+					AlarmCall wnd = new AlarmCall(next.Label, (next.TargetTime.Hour > 12 ? "PM " : "AM ") + next.TargetTime.ToString("h:mm"), 10000);
 					wnd.Left = SystemParameters.PrimaryScreenWidth - 430;
 					wnd.Top = SystemParameters.PrimaryScreenHeight - 150;
 					wnd.Show();
-
-					System.Media.SystemSounds.Hand.Play();
+					PlayAlarm();
 				}
 			}
 			else

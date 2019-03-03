@@ -14,8 +14,13 @@
             <GradientStop Color="#FF263747"/>
             <GradientStop Color="#FFC5986F" Offset="1"/>
         </LinearGradientBrush>
-        
+
         <LinearGradientBrush x:Key="MorningBrush" EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+            <GradientStop Color="#FF9EB7CB" Offset="0.5"/>
+            <GradientStop Color="#FFE2B769" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="AfternoonBrush" EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
             <GradientStop Color="#FF527CB6"/>
             <GradientStop Color="#FF96BCE0" Offset="1"/>
         </LinearGradientBrush>

@@ -11,8 +11,10 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace SimpleAlarm
 {
@@ -55,13 +57,23 @@ namespace SimpleAlarm
 
 	public partial class AlarmCall : Window
     {
-		public AlarmCall(string title, string description)
+		public AlarmCall(string title, string description, double timeoutMillis)
         {
             InitializeComponent();
 
 			tblTitle.Text = title;
 			tblDescription.Text = description;
+
+			DispatcherTimer timer = new DispatcherTimer();
+			timer.Interval = TimeSpan.FromMilliseconds(timeoutMillis);
+			timer.Tick += Timer_Tick;
+			timer.Start();
         }
+
+		private void Timer_Tick(object sender, EventArgs e)
+		{
+			BeginStoryboard((Storyboard)FindResource("ClosingStoryboard"));
+		}
 
 		internal void EnableBlur()
 		{
@@ -90,7 +102,7 @@ namespace SimpleAlarm
 			EnableBlur();
 		}
 
-		private void wndRoot_MouseDown(object sender, MouseButtonEventArgs e)
+		private void CloseAnimation_Completed(object sender, EventArgs e)
 		{
 			Close();
 		}

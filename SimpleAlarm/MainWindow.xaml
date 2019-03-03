@@ -28,7 +28,7 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Rectangle Grid.RowSpan="3" Fill="{StaticResource MorningBrush}">
+                <Rectangle x:Name="pnlBackground" Grid.RowSpan="3" Fill="{StaticResource AfternoonBrush}">
                     <Rectangle.Effect>
                         <DropShadowEffect Color="#FFBDBDBD" ShadowDepth="3" Direction="270" />
                     </Rectangle.Effect>
