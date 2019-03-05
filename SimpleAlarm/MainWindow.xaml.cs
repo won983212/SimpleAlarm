@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Media;
@@ -100,7 +101,7 @@ namespace SimpleAlarm
 
 			clock.Time = now;
 			counterCurrentTime.Time = new TimeSpan(now.Hour % 12, now.Minute, 0);
-			tblCurrentAmPm.Text = now.Hour > 12 ? "PM" : "AM";
+			tblCurrentAmPm.Text = now.ToString("tt", CultureInfo.InvariantCulture);
 			tblCurrentDate.Text = now.ToString("yyyy.MM.dd ") + Alarm.GetDayOfWeek(now.DayOfWeek);
 
 			string brushKey = "NightBrush";
@@ -310,13 +311,12 @@ namespace SimpleAlarm
 				return;
 			}
 
-			if (cbxAlarmAmPm.SelectedIndex == 1)
-				hour += 12;
+			string ampm = (string) cbxAlarmAmPm.SelectedValue;
+			string hour_ = (hour < 10) ? ("0" + hour) : hour.ToString();
+			string min_ = (min < 10) ? ("0" + min) : min.ToString();
+			DateTime targetTime = DateTime.ParseExact(hour_ + ":" + min_ + " " + ampm, "hh:mm tt", CultureInfo.InvariantCulture);
 
-			if (hour > 23)
-				hour = 0;
-
-			Alarms.InsertAlarm(new Alarm() { Manager = Alarms, Label = tbxAlarmName.Text, TargetTime = new DateTime(1, 1, 1, hour, min, 0) });
+			Alarms.InsertAlarm(new Alarm() { Manager = Alarms, Label = tbxAlarmName.Text, TargetTime = targetTime });
 			patterns.SaveToSettings();
 			pnlAddAlarm.Visibility = Visibility.Hidden;
 			wndGrid.Effect = null;

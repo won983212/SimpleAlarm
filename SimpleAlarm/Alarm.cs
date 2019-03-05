@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,7 +42,7 @@ namespace SimpleAlarm
 		{
 			get
 			{
-				return TargetTime.Hour > 12 ? "PM" : "AM";
+				return TargetTime.ToString("tt", CultureInfo.InvariantCulture);
 			}
 		}
 
