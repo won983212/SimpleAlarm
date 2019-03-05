@@ -313,6 +313,9 @@ namespace SimpleAlarm
 			if (cbxAlarmAmPm.SelectedIndex == 1)
 				hour += 12;
 
+			if (hour > 23)
+				hour = 0;
+
 			Alarms.InsertAlarm(new Alarm() { Manager = Alarms, Label = tbxAlarmName.Text, TargetTime = new DateTime(1, 1, 1, hour, min, 0) });
 			patterns.SaveToSettings();
 			pnlAddAlarm.Visibility = Visibility.Hidden;
