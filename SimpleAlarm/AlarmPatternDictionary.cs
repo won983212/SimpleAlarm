@@ -10,7 +10,6 @@ namespace SimpleAlarm
 {
 	public class AlarmPattern
 	{
-		public string Name { get; set; }
 		public AlarmManager Manager;
 
 		public AlarmPattern(AlarmPatternDictionary settings)
@@ -21,22 +20,20 @@ namespace SimpleAlarm
 
 	public class AlarmPatternDictionary
 	{
-		public ObservableCollection<AlarmPattern> Patterns { get; private set; }
+		public const int CountOfPatterns = 5;
+		public AlarmPattern[] Patterns = new AlarmPattern[CountOfPatterns];
 
 		public void LoadFromSettings()
 		{
 			string data = App.Settings.Get("Patterns", "");
-			Patterns = new ObservableCollection<AlarmPattern>();
 			if (data.Length > 0)
 			{
 				byte[] bytes = Encoding.UTF8.GetBytes(data);
 				using (BinaryReader reader = new BinaryReader(new MemoryStream(bytes)))
 				{
-					int len = reader.ReadInt32();
-					for (int i = 0; i < len; i++)
+					for (int i = 0; i < CountOfPatterns; i++)
 					{
 						AlarmPattern pattern = new AlarmPattern(this);
-						pattern.Name = reader.ReadString();
 						int alarmLen = reader.ReadInt32();
 						for (int j = 0; j < alarmLen; j++)
 						{
@@ -49,15 +46,14 @@ namespace SimpleAlarm
 							};
 							pattern.Manager.InsertAlarm(a);
 						}
-						Patterns.Add(pattern);
+						Patterns[i] = pattern;
 					}
 				}
 			}
-
-			if (Patterns.Count == 0)
+			else
 			{
-				Patterns.Add(new AlarmPattern(this) { Name = "알람 패턴" });
-				SaveToSettings();
+				for(int i = 0; i < CountOfPatterns; i++)
+					Patterns[i] = new AlarmPattern(this);
 			}
 		}
 
@@ -66,10 +62,8 @@ namespace SimpleAlarm
 			MemoryStream stream = new MemoryStream();
 			using (BinaryWriter writer = new BinaryWriter(stream))
 			{
-				writer.Write(Patterns.Count);
 				foreach (AlarmPattern pattern in Patterns)
 				{
-					writer.Write(pattern.Name);
 					writer.Write(pattern.Manager.Collection.Count);
 					foreach (Alarm alarm in pattern.Manager.Collection)
 					{

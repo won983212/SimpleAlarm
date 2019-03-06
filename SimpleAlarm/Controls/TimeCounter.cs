@@ -17,11 +17,17 @@ namespace SimpleAlarm.Controls
 	class TimeCounter : Control
 	{
 		public static DependencyProperty TimeProperty
-			= DependencyProperty.Register("Time", typeof(TimeSpan), typeof(TimeCounter),
-				new FrameworkPropertyMetadata(TimeSpan.FromSeconds(0), FrameworkPropertyMetadataOptions.AffectsRender, OnTimeChanged));
-		public static DependencyProperty ShowSecondsProperty
-			= DependencyProperty.Register("ShowSeconds", typeof(bool), typeof(TimeCounter),
-				new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsMeasure));
+			= DependencyProperty.Register("Time", typeof(DateTime), typeof(TimeCounter),
+				new FrameworkPropertyMetadata(new DateTime(1, 1, 1, 0, 0, 0), FrameworkPropertyMetadataOptions.AffectsRender, OnTimeChanged));
+
+		public static DependencyProperty TimeRemainingProperty
+			= DependencyProperty.Register("TimeRemaining", typeof(TimeSpan), typeof(TimeCounter),
+				new FrameworkPropertyMetadata(TimeSpan.FromSeconds(0), FrameworkPropertyMetadataOptions.AffectsRender, OnTimeRemainingChanged));
+
+		public static DependencyProperty IsDatetimeViewProperty
+			= DependencyProperty.Register("IsDatetimeView", typeof(bool), typeof(TimeCounter),
+				new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsRender));
+
 		public static DependencyProperty InverseAnimationProperty
 			= DependencyProperty.Register("InverseAnimation", typeof(bool), typeof(TimeCounter),
 				new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
@@ -39,16 +45,22 @@ namespace SimpleAlarm.Controls
 			ClipToBounds = true;
 		}
 
-		public TimeSpan Time
+		public DateTime Time
 		{
-			get => (TimeSpan)GetValue(TimeProperty);
+			get => (DateTime)GetValue(TimeProperty);
 			set => SetValue(TimeProperty, value);
 		}
 
-		public bool ShowSeconds
+		public TimeSpan TimeRemaining
 		{
-			get => (bool)GetValue(ShowSecondsProperty);
-			set => SetValue(ShowSecondsProperty, value);
+			get => (TimeSpan)GetValue(TimeRemainingProperty);
+			set => SetValue(TimeRemainingProperty, value);
+		}
+
+		public bool IsDatetimeView
+		{
+			get => (bool)GetValue(IsDatetimeViewProperty);
+			set => SetValue(IsDatetimeViewProperty, value);
 		}
 
 		public bool InverseAnimation
@@ -59,7 +71,7 @@ namespace SimpleAlarm.Controls
 
 		public string Label
 		{
-			get => ShowSeconds ? Time.ToString("hh':'mm':'ss") : Time.ToString("hh':'mm");
+			get => IsDatetimeView ? Time.ToString("hh:mm") : TimeRemaining.ToString("hh':'mm':'ss");
 		}
 
 		private FormattedText CreateFormattedText(string text)
@@ -120,7 +132,7 @@ namespace SimpleAlarm.Controls
 			using (DrawingContext dc = group.Open())
 			{
 				double offset = 0;
-				for (int i = 0, j = 0; i < text.Length + (ShowSeconds ? 2 : 1); i++)
+				for (int i = 0, j = 0; i < text.Length + (IsDatetimeView ? 1 : 2); i++)
 				{
 					if (i == 2 || i == 5)
 					{
@@ -154,7 +166,7 @@ namespace SimpleAlarm.Controls
 			spliter = CreateFormattedText(":");
 
 			// Create label characters
-			int textLength = ShowSeconds ? 6 : 4;
+			int textLength = IsDatetimeView ? 4 : 6;
 			text = new FormattedText[textLength];
 			animatedText = new FormattedText[textLength];
 			animatedOffset = new double[textLength];
@@ -166,23 +178,34 @@ namespace SimpleAlarm.Controls
 			}
 		}
 
+		private static void OnTimeRemainingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			TimeCounter counter = d as TimeCounter;
+			string timeNew = ((TimeSpan)e.NewValue).ToString("hhmmss");
+			string timeOld = ((TimeSpan)e.OldValue).ToString("hhmmss");
+			AnimateChanged(counter, timeOld, timeNew);
+		}
+
 		private static void OnTimeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			TimeCounter counter = d as TimeCounter;
-			string timeNew = ((TimeSpan) e.NewValue).ToString("hhmmss");
-			string timeOld = ((TimeSpan) e.OldValue).ToString("hhmmss");
-			
-			int count = counter.ShowSeconds ? 6 : 4;
-			for (int i = 0; i < count; i++)
+			string timeNew = ((DateTime) e.NewValue).ToString("hhmm");
+			string timeOld = ((DateTime) e.OldValue).ToString("hhmm");
+			AnimateChanged(counter, timeOld, timeNew);
+		}
+
+		private static void AnimateChanged(TimeCounter counter, string oldStr, string newStr)
+		{
+			for (int i = 0; i < oldStr.Length; i++)
 			{
-				if (timeOld[i] != timeNew[i])
-					counter.Animate(i, timeNew[i]);
+				if (oldStr[i] != newStr[i])
+					counter.Animate(i, newStr[i]);
 			}
 		}
 
 		protected override Size MeasureOverride(Size constraint)
 		{
-			return new Size(textSize.Width * text.Length + spliter.Width * (ShowSeconds ? 2 : 1), textSize.Height);
+			return new Size(textSize.Width * text.Length + spliter.Width * (IsDatetimeView ? 1 : 2), textSize.Height);
 		}
 
 		protected override void OnRender(DrawingContext dc)

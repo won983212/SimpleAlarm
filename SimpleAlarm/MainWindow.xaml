@@ -58,13 +58,13 @@
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal" Margin="0,0,10,0">
                             <controls:TimeCounter x:Name="counterCurrentTime" Margin="0,0,0,10" Foreground="{StaticResource WhiteBrush}" FontSize="88" FontFamily="NanumSquare Light" />
-                            <TextBlock x:Name="tblCurrentAmPm" Foreground="{StaticResource WhiteBrush}" Margin="7,0,0,20" VerticalAlignment="Bottom" FontSize="24" Text="AM" FontFamily="NanumSquare Light"/>
+                            <TextBlock x:Name="tblCurrentAmPm" Foreground="{StaticResource WhiteBrush}" Margin="7,0,15,20" VerticalAlignment="Bottom" FontSize="24" Text="AM" FontFamily="NanumSquare Light"/>
                         </StackPanel>
-                        <controls:TimeCounter x:Name="counterCurrentAlarm" Margin="0,0,0,10" Foreground="{StaticResource WhiteBrush}" FontSize="45" InverseAnimation="True" ShowSeconds="True" FontFamily="NanumSquare Light" />
+                        <controls:TimeCounter x:Name="counterCurrentAlarm" Margin="10,0,0,10" Foreground="{StaticResource WhiteBrush}" FontSize="45" InverseAnimation="True" IsDatetimeView="False" FontFamily="NanumSquare Light" />
                     </StackPanel>
                 </Grid>
                 <Grid Grid.Row="2">
-                    <Rectangle x:Name="bkgStatusBar" Fill="#66000000" />
+                    <Rectangle Height="35" Fill="#66000000" />
                     <StackPanel Orientation="Horizontal">
                         <Button Margin="0,0,3,0" Style="{StaticResource TransparentButton}" ToolTip="알람 설정 메뉴를 열거나 닫습니다." Click="MenuToggle_Click">
                             <Button.Content>
@@ -73,13 +73,7 @@
                         </Button>
                         <TextBlock x:Name="tblCurrentDate" Foreground="{StaticResource WhiteBrush}" VerticalAlignment="Center" FontSize="14" Text="2019.02.22 FRIDAY" FontFamily="Yu Gothic UI"/>
                     </StackPanel>
-                    <ComboBox x:Name="cbxAlarmPattern" Margin="6" HorizontalAlignment="Right" Width="120" SelectionChanged="AlarmPattern_SelectionChanged" ToolTip="사용할 알람 패턴을 지정합니다.">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                    <controls:PatternSelector x:Name="btsButtons" HorizontalAlignment="Right" SelectedChanged="Pattern_SelectedChanged"/>
                 </Grid>
                 <Grid x:Name="pnlAlarmMenu" Grid.Row="3" Height="300">
                     <Grid.RowDefinitions>
@@ -134,16 +128,6 @@
                                     <Image Width="22" Source="/Resources/add_alarm.png"/>
                                 </Button.Content>
                             </Button>
-                            <Button Style="{StaticResource TransparentButton}" ToolTip="알람 패턴을 추가합니다." Click="AddAlarmPattern_Click">
-                                <Button.Content>
-                                    <Image Width="16" Source="/Resources/add.png"/>
-                                </Button.Content>
-                            </Button>
-                            <Button Style="{StaticResource TransparentButton}" ToolTip="현재 선택된 알람 패턴을 삭제합니다." Click="RemoveAlarm_Click">
-                                <Button.Content>
-                                    <Image Width="16" Source="/Resources/remove.png"/>
-                                </Button.Content>
-                            </Button>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,5,0" HorizontalAlignment="Right">
                             <TextBlock VerticalAlignment="Center" Text="항상 위로 " Foreground="LightGray" FontFamily="NanumSquare" FontSize="15"/>
@@ -152,16 +136,6 @@
                     </Grid>
                 </Grid>
             </Grid>
-            <Border x:Name="pnlAddPattern" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{StaticResource GrayBrush}" BorderThickness="1" Background="{StaticResource WhiteBrush}" Visibility="Hidden">
-                <StackPanel Margin="10">
-                    <TextBlock Margin="0,0,0,5" FontFamily="NanumSquare" FontSize="18" Text="추가할 알람 패턴의 이름을 입력하세요."/>
-                    <TextBox x:Name="tbxPatternName" Margin="0,7" Height="25" VerticalContentAlignment="Center"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Margin="0,0,5,0" Width="50" Height="25" Content="추가" Click="AddPattern_Click"/>
-                        <Button Width="50" Height="25" Content="취소" Click="CancelPattern_Click"/>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
             <Border x:Name="pnlAddAlarm" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="{StaticResource GrayBrush}" BorderThickness="1" Background="{StaticResource WhiteBrush}" Visibility="Hidden">
                 <StackPanel Width="300">
                     <TextBlock Margin="10,10,10,5" FontFamily="NanumSquare" FontSize="18" Text="알람 이름"/>

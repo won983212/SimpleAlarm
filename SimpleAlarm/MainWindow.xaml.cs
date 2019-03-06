@@ -67,8 +67,8 @@ namespace SimpleAlarm
 			patterns = new AlarmPatternDictionary();
 			patterns.LoadFromSettings();
 
-			cbxAlarmPattern.ItemsSource = patterns.Patterns;
-			cbxAlarmPattern.SelectedIndex = App.Settings.Get("SelectedPatternIndex", 0);
+			btsButtons.Buttons = patterns.Patterns;
+			btsButtons.SelectedIndex = App.Settings.Get("SelectedPatternIndex", 1);
 			itemsAlarm.ItemsSource = Alarms.Collection;
 
 			for (int i = 1; i <= 12; i++)
@@ -85,7 +85,7 @@ namespace SimpleAlarm
 		{
 			get
 			{
-				return patterns.Patterns[cbxAlarmPattern.SelectedIndex].Manager;
+				return patterns.Patterns[btsButtons.SelectedIndex - 1].Manager;
 			}
 		}
 
@@ -100,7 +100,7 @@ namespace SimpleAlarm
 			DateTime now = DateTime.Now;
 
 			clock.Time = now;
-			counterCurrentTime.Time = new TimeSpan(now.Hour % 12, now.Minute, 0);
+			counterCurrentTime.Time = now;
 			tblCurrentAmPm.Text = now.ToString("tt", CultureInfo.InvariantCulture);
 			tblCurrentDate.Text = now.ToString("yyyy.MM.dd ") + Alarm.GetDayOfWeek(now.DayOfWeek);
 
@@ -119,7 +119,7 @@ namespace SimpleAlarm
 			{
 				TimeSpan remain = next.GetTimeRemaining();
 				counterCurrentAlarm.Visibility = Visibility.Visible;
-				counterCurrentAlarm.Time = remain;
+				counterCurrentAlarm.TimeRemaining = remain;
 				tblAlarmLabel.Text = prev.Label;
 				Alarms.UpdateAlarms();
 
@@ -190,18 +190,12 @@ namespace SimpleAlarm
 			}
 			else if (menuMode == 1)
 			{
-				bkgStatusBar.Visibility = Visibility.Hidden;
-				cbxAlarmPattern.Visibility = Visibility.Hidden;
-				tblCurrentDate.Visibility = Visibility.Hidden;
 				pnlTopBar.Visibility = Visibility.Hidden;
 				App.Settings.Set("MenuOpened", 2);
 			}
 			else
 			{
 				alarmMenuAnimation.Open();
-				bkgStatusBar.Visibility = Visibility.Visible;
-				cbxAlarmPattern.Visibility = Visibility.Visible;
-				tblCurrentDate.Visibility = Visibility.Visible;
 				pnlTopBar.Visibility = Visibility.Visible;
 				App.Settings.Set("MenuOpened", 0);
 			}
@@ -222,70 +216,22 @@ namespace SimpleAlarm
 			else
 			{
 				alarmMenuAnimation.Close();
-				bkgStatusBar.Visibility = Visibility.Hidden;
-				cbxAlarmPattern.Visibility = Visibility.Hidden;
-				tblCurrentDate.Visibility = Visibility.Hidden;
 				pnlTopBar.Visibility = Visibility.Hidden;
 			}
 		}
 
 		private void AddAlarm_Click(object sender, RoutedEventArgs e)
 		{
+			DateTime now = DateTime.Now;
+			string hourText = now.ToString("hh");
+			bool isAm = now.ToString("tt", CultureInfo.InvariantCulture).ToLower() == "am";
+
 			tbxAlarmName.Text = "";
+			cbxAlarmHour.SelectedIndex = int.Parse(hourText) - 1;
+			cbxAlarmMinute.SelectedIndex = now.Minute - 1;
+			cbxAlarmAmPm.SelectedIndex = isAm ? 0 : 1;
 			pnlAddAlarm.Visibility = Visibility.Visible;
 			wndGrid.Effect = blur;
-		}
-
-		private void AddAlarmPattern_Click(object sender, RoutedEventArgs e)
-		{
-			tbxPatternName.Text = "";
-			pnlAddPattern.Visibility = Visibility.Visible;
-			wndGrid.Effect = blur;
-		}
-
-		private void RemoveAlarm_Click(object sender, RoutedEventArgs e)
-		{
-			if(patterns.Patterns.Count == 1)
-			{
-				MessageBox.Show("패턴을 최소 1개 이상은 남겨두어야 합니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
-				return;
-			}
-
-			patterns.Patterns.RemoveAt(cbxAlarmPattern.SelectedIndex);
-			patterns.SaveToSettings();
-			cbxAlarmPattern.SelectedIndex = patterns.Patterns.Count - 1;
-		}
-
-		private void AddPattern_Click(object sender, RoutedEventArgs e)
-		{
-			if (tbxPatternName.Text.Count() == 0)
-			{
-				MessageBox.Show("패턴 이름란이 비어있습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
-				return;
-			}
-			
-			patterns.Patterns.Add(new AlarmPattern(patterns) { Name = tbxPatternName.Text });
-			patterns.SaveToSettings();
-
-			cbxAlarmPattern.SelectedIndex = patterns.Patterns.Count - 1;
-			pnlAddPattern.Visibility = Visibility.Hidden;
-			wndGrid.Effect = null;
-		}
-
-		private void CancelPattern_Click(object sender, RoutedEventArgs e)
-		{
-			pnlAddPattern.Visibility = Visibility.Hidden;
-			wndGrid.Effect = null;
-		}
-
-		private void AlarmPattern_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cbxAlarmPattern.SelectedIndex != -1)
-			{
-				itemsAlarm.ItemsSource = Alarms.Collection;
-				App.Settings.Set("SelectedPatternIndex", cbxAlarmPattern.SelectedIndex);
-				App.Settings.Save();
-			}
 		}
 
 		private void AlarmAdd_Click(object sender, RoutedEventArgs e)
@@ -343,6 +289,13 @@ namespace SimpleAlarm
 				Alarms.RemoveAlarm(alarm);
 				patterns.SaveToSettings();
 			}
+		}
+
+		private void Pattern_SelectedChanged(object sender, EventArgs e)
+		{
+			itemsAlarm.ItemsSource = Alarms.Collection;
+			App.Settings.Set("SelectedPatternIndex", btsButtons.SelectedIndex);
+			App.Settings.Save();
 		}
 	}
 }
